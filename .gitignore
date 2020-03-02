@@ -1,0 +1,8 @@
+.rvmrc
+.DS_Store
+*.rdb
+.env
+.env.development
+docker-compose.yml
+tags
+TAGS

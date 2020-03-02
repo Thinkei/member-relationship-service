@@ -1,0 +1,116 @@
+version: 2
+jobs:
+  danger:
+    working_directory: ~/app
+    docker:
+      - image: circleci/ruby:2.3.3
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - eh-bundler-{{ checksum "Gemfile.lock" }}
+            - eh-bundler
+      - run: bundle check || bundle install --path=vendor/bundle --jobs=4 --retry=3 --without development
+      - save_cache:
+          key: eh-bundler-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run: bundle exec danger
+  rspec:
+    environment:
+      - DATABASE_USR: circleci
+      - DATABASE_HOST: 127.0.0.1
+      - DATABASE_PORT: 5432
+      - DATABASE_ADAPTER: postgres
+      - DATABASE_NAME: circleci
+    docker:
+      - image: ehdevops/ruby240:latest
+      - image: circleci/postgres:9.6-alpine
+        environment:
+          - POSTGRES_USER: circleci
+          - POSTGRES_DB: circleci
+    working_directory: ~/app
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - bundle-cache{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path=vendor/bundle --jobs=4 --retry=3 --without development
+      - save_cache:
+          key: bundle-cache{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/app/vendor/bundle
+      - run: mkdir -p tmp/; mkdir -p tmp/cache
+      - run: bundle exec rspec --format progress --format RspecJunitFormatter --out /tmp/test-result/rspec.xml
+      - type: store_test_results
+        path: /tmp/test-results
+  deploy_staging:
+    docker:
+      - image: ehdevops/ruby240:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: aws configure set default.region ap-southeast-2
+      - run: eval $(aws ecr get-login)
+      - run: ehcli login --email ${EH_EMAIL} --password ${EH_PASSWORD}
+      - restore_cache:
+          key: docker-build-{{ .Branch }}-{{ checksum "Dockerfile" }}
+          paths:
+            - tmp/cache/app.tar
+      - run: ehcli ci:build app.json --cache-from $(ehcli manifest:get app.json "repo.host")/$(ehcli manifest:get app.json "repo.name") --app-version $CIRCLE_SHA1 --build-arg BUNDLE_GEM__FURY__IO=$BUNDLE_GEM__FURY__IO
+      - run: ehcli ci:push app.json --app-version $CIRCLE_SHA1 -t latest
+      - run: ehcli run rake db:migrate -a $(ehcli manifest:get app.json name) --version $CIRCLE_SHA1 --context $STAGING_CLUSTER --no-tty
+      - run: ehcli ci:deploy app.json --app-version $CIRCLE_SHA1 --context $STAGING_CLUSTER
+      - run: docker logout https://$(ehcli manifest:get app.json repo.host)
+      - save_cache:
+          key: docker-build-{{ .Branch }}-{{ checksum "Dockerfile" }}
+          paths:
+            - tmp/cache/app.tar
+
+  deploy_production:
+    docker:
+      - image: ehdevops/ruby240:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: aws configure set default.region ap-southeast-2
+      - run: eval $(aws ecr get-login)
+      - run: ehcli login --email ${EH_EMAIL} --password ${EH_PASSWORD}
+      - restore_cache:
+          key: docker-build-{{ .Branch }}-{{ checksum "Dockerfile" }}
+          paths:
+            - tmp/cache/app.tar
+      - run: ehcli ci:build app.json --cache-from $(ehcli manifest:get app.json "repo.host")/$(ehcli manifest:get app.json "repo.name") --app-version $CIRCLE_SHA1 --build-arg BUNDLE_GEM__FURY__IO=$BUNDLE_GEM__FURY__IO
+      - run: ehcli ci:push app.json --app-version $CIRCLE_SHA1 -t latest
+      - run: ehcli run rake db:migrate -a $(ehcli manifest:get app.json name) --version $CIRCLE_SHA1 --context $PRODUCTION_CLUSTER --no-tty
+      - run: ehcli ci:deploy app.json --app-version $CIRCLE_SHA1 --context $PRODUCTION_CLUSTER
+      - run: docker logout https://$(ehcli manifest:get app.json repo.host)
+      - save_cache:
+          key: docker-build-{{ .Branch }}-{{ checksum "Dockerfile" }}
+          paths:
+            - tmp/cache/app.tar
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - danger:
+          context: org-global
+      - rspec:
+          context: org-global
+      - deploy_staging:
+          context: org-global
+          filters:
+            branches:
+              only: develop
+          requires:
+            - rspec
+      - deploy_production:
+          context: org-global
+          filters:
+            branches:
+              only: master
+          requires:
+            - rspec
