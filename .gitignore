@@ -7,3 +7,4 @@ docker-compose.yml
 tags
 TAGS
 .gems
+.rubocop-https*
