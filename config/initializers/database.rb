@@ -6,7 +6,7 @@ DB = if !ENV['DATABASE_URL'].to_s.empty?
          ENV['DATABASE_URL'],
          max_connections: (ENV['DATABASE_POOL'] || 4).to_i
        )
-     else
+     elsif ENV['APP_ENV'] == 'development'
        db_config = {
          adapter: ENV['DATABASE_ADAPTER'] || 'postgres',
          database: 'postgres',
@@ -16,7 +16,7 @@ DB = if !ENV['DATABASE_URL'].to_s.empty?
          password: ENV['DATABASE_PWD'],
          max_connections: (ENV['DATABASE_POOL'] || 4).to_i
        }
-       db_config[:logger] = EhMicro::Log.logger if ENV['APP_ENV'] != 'production'
+       db_config[:logger] = EhMicro::Log.logger
        DB_CONFIG = db_config.freeze
 
        ENV['DATABASE_NAME'] ||= 'member_relationship_service'
