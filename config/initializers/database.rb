@@ -20,8 +20,6 @@ if ENV['APP_ENV'] == 'development'
       "WHERE datname='#{db_name}'"
     db.execute "CREATE DATABASE #{db_name}" if res != 1
   end
-
-  DB = Sequel.connect(DB_CONFIG.merge(database: db_name))
 end
 
 if ENV['DATABASE_URL']
