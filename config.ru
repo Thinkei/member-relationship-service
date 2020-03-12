@@ -7,6 +7,6 @@ if %w[production staging].include?(ENV['APP_ENV'])
 end
 
 run Rack::Cascade.new [
-  Api::V1::EventsController
+  # Api::V1::EventsController
   # Add more app as you wish
 ]

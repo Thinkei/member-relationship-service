@@ -20,3 +20,5 @@ else
   db_name = ENV['DATABASE_NAME']
   DB = Sequel.connect(DB_CONFIG.merge(database: db_name))
 end
+
+Sequel::Model.plugin :validation_helpers

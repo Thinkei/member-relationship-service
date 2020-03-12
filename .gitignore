@@ -8,3 +8,4 @@ tags
 TAGS
 .gems
 .rubocop-https*
+.byebug_history

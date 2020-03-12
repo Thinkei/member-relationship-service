@@ -3,7 +3,7 @@
 desc 'Create migration file'
 # eg: rake generate migration create_resellers
 task :generate do
-  if ARGV[1] == 'migration' && !(ARGV[2].nil? || ARGV[2].blank?)
+  if ARGV[1] == 'migration' && !ARGV[2].nil?
     timestamp = Time.new.strftime('%Y%m%d%H%M%S')
     migration_dir = Dir.pwd + '/db/migrations'
     migration_path = "#{migration_dir}/#{timestamp}_#{ARGV[2]}.rb"

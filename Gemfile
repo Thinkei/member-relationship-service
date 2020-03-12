@@ -14,7 +14,6 @@ gem 'sentry-raven'
 gem 'sequel'
 gem 'sinatra'
 gem 'sinatra-contrib', require: false
-gem 'dotenv'
 
 source 'https://gem.fury.io/eh-devops/' do
   gem 'eh_micro', '0.1.2'
