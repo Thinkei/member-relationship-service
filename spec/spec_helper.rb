@@ -2,11 +2,6 @@ ENV['APP_ENV'] ||= 'test'
 
 # Setup new database
 require 'require_all'
-require_relative '../config/initializers/configurations'
-require_relative '../config/initializers/database'
-# load './lib/tasks/db.rake'
-# Rake::Task['db:reset'].invoke
-
 require 'byebug'
 require 'database_cleaner'
 require 'rspec/collection_matchers'
