@@ -5,6 +5,7 @@ require 'require_all'
 require 'byebug'
 require 'database_cleaner'
 require 'rspec/collection_matchers'
+require 'rspec_sequel_matchers'
 require 'rack/test'
 require_all 'spec/helpers'
 require_relative '../config/environment'
@@ -12,6 +13,7 @@ require_relative '../config/environment'
 RSpec.configure do |config|
   config.include Rack::Test::Methods
   config.include Helpers::IndifferentHashResponse
+  config.include RspecSequel::Matchers
   config.order = 'default'
 
   config.before(:suite) do
