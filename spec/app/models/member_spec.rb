@@ -11,7 +11,7 @@ describe Member, type: :model do
   end
 
   context 'organisation_id is not empty' do
-    let(:new_member) { Member.new(organisation_id: Faker::Number.number(2).to_i) }
+    let(:new_member) { Member.new(organisation_id: SecureRandom.uuid) }
 
     it 'create a new member success' do
       expect(new_member.valid?).to be true
