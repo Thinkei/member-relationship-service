@@ -4,7 +4,7 @@ gem 'dotenv'
 gem 'karafka'
 gem 'pg', '~>0.20.0'
 gem 'puma'
-gem "rack", ">= 2.0.6"
+gem 'rack', '>= 2.0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rack-parser', require: 'rack/parser'
 gem 'rake'
@@ -26,6 +26,7 @@ group :test do
   gem 'rspec'
   gem 'rspec-collection_matchers'
   gem 'rspec_junit_formatter'
+  gem 'rspec_sequel_matchers'
 end
 
 group :development do
