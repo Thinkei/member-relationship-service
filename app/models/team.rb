@@ -1,6 +1,6 @@
-class Group < Sequel::Model(DB[:groups])
+class Team < Sequel::Model(DB[:teams])
   many_to_one :organisation
-  many_to_many :teams
+  many_to_many :groups
   many_to_many :members
 
   def validate

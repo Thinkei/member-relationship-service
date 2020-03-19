@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Group, type: :model do
   it { is_expected.to have_many_to_one :organisation }
+  it { is_expected.to have_many_to_many :teams }
   it { is_expected.to have_many_to_many :members }
 
   context 'organisation_id is empty' do
