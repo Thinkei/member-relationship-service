@@ -1,15 +1,5 @@
 Sequel.migration do
   change do
-    create_table(:groups) do
-      column :id, "uuid", :default=>Sequel::LiteralString.new("uuid_generate_v4()"), :null=>false
-      column :name, "text"
-      column :organisation_id, "uuid", :null=>false
-      column :created_at, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP
-      column :updated_at, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP
-      
-      primary_key [:id]
-    end
-    
     create_table(:groups_members) do
       column :id, "uuid", :default=>Sequel::LiteralString.new("uuid_generate_v4()"), :null=>false
       column :group_id, "uuid", :null=>false
@@ -56,6 +46,16 @@ Sequel.migration do
       column :leader_id, "uuid"
       column :created_at, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP
       column :updated_at, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP
+      
+      primary_key [:id]
+    end
+    
+    create_table(:groups) do
+      column :id, "uuid", :default=>Sequel::LiteralString.new("uuid_generate_v4()"), :null=>false
+      column :name, "text"
+      column :created_at, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP
+      column :updated_at, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP
+      foreign_key :organisation_id, :organisations, :type=>"uuid", :null=>false, :key=>[:id]
       
       primary_key [:id]
     end
