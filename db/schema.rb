@@ -55,6 +55,8 @@ Sequel.migration do
       column :updated_at, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP
       
       primary_key [:id]
+      
+      index [:member_id, :level], :name=>:member_managers_member_id_level_key, :unique=>true
     end
     
     create_table(:teams) do
