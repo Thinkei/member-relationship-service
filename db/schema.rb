@@ -1,13 +1,5 @@
 Sequel.migration do
   change do
-    create_table(:groups_teams) do
-      column :id, "uuid", :default=>Sequel::LiteralString.new("uuid_generate_v4()"), :null=>false
-      column :group_id, "uuid", :null=>false
-      column :team_id, "uuid", :null=>false
-      
-      primary_key [:id]
-    end
-    
     create_table(:members_teams) do
       column :id, "uuid", :default=>Sequel::LiteralString.new("uuid_generate_v4()"), :null=>false
       column :member_id, "uuid", :null=>false
@@ -70,6 +62,13 @@ Sequel.migration do
       foreign_key :leader_id, :members, :type=>"uuid", :key=>[:id]
       
       primary_key [:id]
+    end
+    
+    create_table(:groups_teams) do
+      foreign_key :group_id, :groups, :type=>"uuid", :null=>false, :key=>[:id]
+      foreign_key :team_id, :teams, :type=>"uuid", :null=>false, :key=>[:id]
+      
+      primary_key [:group_id, :team_id]
     end
   end
 end
