@@ -56,6 +56,7 @@ Sequel.migration do
       
       primary_key [:id]
       
+      index [:manager_id, :member_id], :name=>:member_managers_manager_id_member_id_key, :unique=>true
       index [:member_id, :level], :name=>:member_managers_member_id_level_key, :unique=>true
     end
     

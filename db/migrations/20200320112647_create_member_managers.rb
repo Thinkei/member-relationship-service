@@ -8,6 +8,7 @@ Sequel.migration do
       foreign_key :member_id, :members, type: :uuid, null: false
       column :level, Integer
       column :primary_manager, Integer
+      unique %i[manager_id member_id]
       unique %i[member_id level]
       column :created_at, Time, default: Sequel.function(:now)
       column :updated_at, Time, default: Sequel.function(:now)
