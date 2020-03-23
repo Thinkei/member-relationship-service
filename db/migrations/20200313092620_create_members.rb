@@ -4,7 +4,7 @@ Sequel.migration do
   up do
     create_table :members do
       primary_key :id, :uuid, default: Sequel.function(:uuid_generate_v4)
-      column :organisation_id, :uuid, null: false
+      foreign_key :organisation_id, :organisations, type: :uuid, null: false
       column :active, TrueClass, default: true
       column :accepted, TrueClass, default: false
       column :independent_contractor, TrueClass, default: false

@@ -3,9 +3,10 @@
 Sequel.migration do
   up do
     create_table :groups_members do
-      primary_key :id, :uuid, default: Sequel.function(:uuid_generate_v4)
-      column :group_id, :uuid, null: false
-      column :member_id, :uuid, null: false
+      primary_key %i[group_id member_id], :uuid, default: Sequel.function(:uuid_generate_v4)
+
+      foreign_key :group_id, :groups, type: :uuid, null: false
+      foreign_key :member_id, :members, type: :uuid, null: false
     end
   end
 
